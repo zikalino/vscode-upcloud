@@ -1,0 +1,24 @@
+- type: row
+  subitems:
+    - type: combo
+      name: Select Storage Account
+      items: []
+      source:
+        cmd: |
+          az storage account list
+        path-id: $[*].name
+        path-name: $[*].name
+      produces:
+        - variable: storage_account_name
+    - type: combo
+      name: Select Container
+      items: []
+      source:
+        cmd: |
+          az storage container list --account-name ${storage_account_name}
+        path-id: $[*].name
+        path-name: $[*].name
+      produces:
+        - variable: storage_container_name
+      consumes:
+        - variable: storage_account_name

@@ -1,0 +1,16 @@
+- type: row
+  subitems:
+    - type: combo
+      name: Select Managed Disk
+      items: []
+      source:
+        cmd: |
+          az disk list
+        path-id: $[*].name
+        path-name: $[*].name
+      produces:
+        - variable: disk_id
+          path: $.id
+        - variable: disk_name
+        - variable: disk_resource_group
+          path: $.resourceGroup

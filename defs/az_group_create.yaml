@@ -1,0 +1,63 @@
+# 
+# Command
+#     az group create : Create a new resource group.
+# 
+type: layout-form
+header: 
+  - type: header
+    title: Create a new resource group.
+    logo: icon.webp
+form:
+  - type: fieldset
+    subitems:
+# Arguments
+      #     --location -l                 [Required] : Location. Values from: `az account list-locations`.
+      #                                                You can configure the default location using `az
+      #                                                configure --defaults location=<location>`.
+      - $include: __region_selector.yaml
+      #     --name --resource-group -g -n [Required] : Name of the new resource group.
+      - type: row
+        subitems: 
+          - type: textfield
+            name: name
+            description: Name of the new resource group.
+            produces: 
+              - variable: name
+      #     --managed-by                             : The ID of the resource that manages this resource
+      #                                                group.
+      - type: row
+        subitems: 
+          - type: textfield
+            name: managed-by
+            description: The ID of the resource that manages this resource group.
+            produces: 
+              - variable: managed_by
+      #     --tags                                   : Space-separated tags: key[=value] [key[=value] ...].
+      #                                                Use "" to clear existing tags.
+      - $include: __tags_list.yaml
+# 
+# Examples
+#     Create a new resource group in the West US region.
+#         az group create -l westus -n MyResourceGroup
+# 
+# 
+# To search AI knowledge base for examples, use: az find "az group create"
+# 
+# 
+      - type: 'action-row'
+        name: Create a new resource group.
+        consumes:
+          - variable: region
+            parameter: --location
+          - variable: name
+            parameter: --name
+          - variable: managed_by
+            parameter: --managed-by
+            required: false
+          - variable: tags
+            required: false
+            parameter: --tags
+        verify: |
+            az group show
+        install: az group create
+        uninstall: az group delete

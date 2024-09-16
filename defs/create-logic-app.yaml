@@ -1,0 +1,41 @@
+type: layout-form
+id: root
+header:
+  - type: header
+    title: Logic App
+    logo: icon.webp
+form:
+  - $include: __resource_group_select_or_create.yaml
+  - $include: __storage_account_selector.yaml
+  - $include: __app_service_plan_selector.yaml
+
+  #
+  # LOGIC APP APP ITSELF
+  #
+  - type: fieldset
+    subitems:
+      - type: row
+        subitems:
+          - type: textfield
+            name: Name
+            produces:
+              - variable: logic_app_name
+      - type: 'action-row'
+        name: Create Logic App
+        consumes:
+          - variable: resource_group_name
+          - variable: logic_app_name
+          - variable: storage_account_name
+          - variable: appservice_plan_name
+        verify: |
+            az logicapp show --resource-group ${resource_group_name} --name ${logic_app_name}
+        install: az logicapp create --resource-group ${resource_group_name} --name ${logic_app_name} --storage-account ${storage_account_name} --plan ${appservice_plan_name}
+        uninstall: az logicapp delete --resource-group ${resource_group_name} --name ${logic_app_name} --yes
+
+footer:
+  - type: footer
+    id: footer
+    subitems:
+      - type: button
+        id: install_button
+        text: Create

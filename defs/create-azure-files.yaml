@@ -1,0 +1,44 @@
+type: layout-form
+id: root
+header:
+  - type: header
+    title: Azure Files
+    logo: icon.webp
+form:
+  - $include: __resource_group_select_or_create.yaml
+
+  - type: fieldset
+    id: fieldset-container-instance-creation
+    subitems:
+      - type: row
+        id: container-instance-name-row
+        subitems:
+          - type: textfield
+            name: Container Name
+            produces:
+              - variable: container_name
+      - type: row
+        subitems:
+          - type: textfield
+            name: Container Name
+            produces:
+              - variable: image
+      - type: 'action-row'
+        id: create-container-instance
+        name: Create Container Instance
+        consumes:
+          - variable: resource_group_name
+          - variable: container_name
+          - variable: image
+        verify: |
+            az container show --resource-group ${resource_group_name} --name ${container_name}
+        install: az container create --resource-group ${resource_group_name} --name ${container_name} --image ${image}
+        uninstall: az container delete --resource-group ${resource_group_name} --name ${container_name}
+
+footer:
+  - type: footer
+    id: footer
+    subitems:
+      - type: button
+        id: install_button
+        text: Create

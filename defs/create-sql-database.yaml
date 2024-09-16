@@ -1,0 +1,257 @@
+type: layout-form
+id: root
+header:
+  - type: header
+    title: SQL Database
+    logo: icon.webp
+form:
+  - $include: __resource_group_select_or_create.yaml
+
+  - type: fieldset
+    id: fieldset-container-instance-creation
+    subitems:
+      - type: row
+        id: container-instance-name-row
+        subitems:
+          - type: textfield
+            id: container-instance-name-field
+            name: Container Name
+            produces:
+              - variable: container_name
+      - type: row
+        id: container-instance-image-row
+        subitems:
+          - type: textfield
+            id: container-instance-image-field
+            name: Container Name
+            produces:
+              - variable: image
+      - type: 'action-row'
+        id: create-container-instance
+        name: Create Container Instance
+        consumes:
+          - variable: resource_group_name
+          - variable: container_name
+          - variable: image
+        verify: |
+            az sql server show --resource-group ${resource_group_name} --name ${container_name}
+        install: az sql server create --resource-group ${resource_group_name} --name ${container_name} --image ${image}
+        uninstall: az sql server delete --resource-group ${resource_group_name} --name ${container_name}
+
+footer:
+  - type: footer
+    id: footer
+    subitems:
+      - type: button
+        id: install_button
+        text: Create
+#
+# az sql server create
+#
+# Arguments
+#    --name -n                            [Required] : Name of the Azure SQL Server. You can
+#                                                      configure the default using `az configure
+#                                                      --defaults sql-server=<name>`.
+#    --resource-group -g                  [Required] : Name of resource group. You can configure the
+#                                                      default group using `az configure --defaults
+#                                                      group=<name>`.
+#    --admin-password -p                             : The administrator login password (required
+#                                                      forserver creation).
+#    --admin-user -u                                 : Administrator username for the server.
+#                                                      Oncecreated it cannot be changed.
+#    --assign-identity -i                            : Generate and assign an Azure Active Directory
+#                                                      Identity for this server for use with key
+#                                                      management services like Azure KeyVault.
+#    --enable-ad-only-auth                           : Enable Azure Active Directory Only
+#                                                      Authentication for this server.
+#    --enable-public-network -e            [Preview] : Set whether public network access to
+#                                                      server is allowed or not. When false,only
+#                                                      connections made through Private Links can
+#                                                      reach this server.  Allowed values: false,
+#                                                      true.
+#        Argument '--enable-public-network' is in preview and under development. Reference and
+#        support levels: https://aka.ms/CLI_refstatus
+#    --external-admin-name                           : Display name of the Azure AD administrator
+#                                                      user, group or application.
+#    --external-admin-principal-type                 : User, Group or Application.
+#    --external-admin-sid                            : The unique ID of the Azure AD administrator.
+#                                                      Object Id for User or Group, Client Id for
+#                                                      Applications.
+#    --federated-client-id --fid                     : The federated client id used in cross tenant
+#                                                      CMK scenario.
+#    --identity-type -t                              : Type of Identity to be used. Possible values
+#                                                      are SystemAsssigned,UserAssigned,
+#                                                      SystemAssigned,UserAssigned and None.  Allowed
+#                                                      values: None, SystemAssigned,
+#                                                      SystemAssigned,UserAssigned, UserAssigned.
+#    --key-id -k                                     : The key vault URI for encryption.
+#    --location -l                                   : Location. Values from: `az account list-
+#                                                      locations`. You can configure the default
+#                                                      location using `az configure --defaults
+#                                                      location=<location>`.
+#    --minimal-tls-version                           : The minimal TLS version enforced by the sql
+#                                                      server for inbound connections.  Allowed
+#                                                      values: 1.0, 1.1, 1.2, 1.3.
+#    --no-wait                                       : Do not wait for the long-running operation to
+#                                                      finish.
+#    --pid --primary-user-assigned-identity-id       : The ID of the primary user managed identity.
+#    --restrict-outbound-network-access -r [Preview] : Set whether outbound network access
+#                                                      to server is restricted or not. When true,the
+#                                                      outbound connections from the server will be
+#                                                      restricted.  Allowed values: false, true.
+#        Argument '--restrict-outbound-network-access' is in preview and under development.
+#        Reference and support levels: https://aka.ms/CLI_refstatus
+#    --user-assigned-identity-id -a                  : Generate and assign an User Managed
+#                                                      Identity(UMI) for this server.
+
+
+#
+# az sql db create
+# 
+# Arguments
+#    --name -n                                          [Required] : Name of the Azure SQL Database.
+#    --resource-group -g                                [Required] : Name of resource group. You can
+#                                                                    configure the default group
+#                                                                    using `az configure --defaults
+#                                                                    group=<name>`.
+#    --server -s                                        [Required] : Name of the Azure SQL Server.
+#                                                                    You can configure the default
+#                                                                    using `az configure --defaults
+#                                                                    sql-server=<name>`.
+#    --assign-identity -i                                          : Assign identity for database.
+#                                                                    Allowed values: false, true.
+#    --availability-zone                                           : Availability zone.
+#    --backup-storage-redundancy --bsr                             : Backup storage redundancy used
+#                                                                    to store backups. Allowed values
+#                                                                    include: Local, Zone, Geo,
+#                                                                    GeoZone.
+#    --encryption-protector                                        : Specifies the Azure key vault
+#                                                                    key to be used as database
+#                                                                    encryption protector key.
+#    --encryption-protector-auto-rotation --epauto                 : Specifies the database
+#                                                                    encryption protector key auto
+#                                                                    rotation flag. Can be either
+#                                                                    true, false or null.  Allowed
+#                                                                    values: false, true.
+#    --exhaustion-behavior --fleb --free-limit-exhaustion-behavior : Specifies the behavior when
+#                                                                    monthly free limits are
+#                                                                    exhausted for the free
+#                                                                    database.AutoPause: The database
+#                                                                    will be auto paused upon
+#                                                                    exhaustion of free limits for
+#                                                                    remainder of the
+#                                                                    month.BillForUsage: The database
+#                                                                    will continue to be online upon
+#                                                                    exhaustion of free limitsand any
+#                                                                    overage will be billed.  Allowed
+#                                                                    values: AutoPause,
+#                                                                    BillOverUsage.
+#    --federated-client-id                                         : The federated client id for the
+#                                                                    SQL Database. It is used for
+#                                                                    cross tenant CMK scenario.
+#    --free-limit --use-free-limit                                 : Whether or not the database uses
+#                                                                    free monthly limits. Allowed on
+#                                                                    one database in a subscription.
+#                                                                    Allowed values: false, true.
+#    --ha-replicas --read-replicas                                 : The number of high availability
+#                                                                    replicas to provision for the
+#                                                                    database. Only settable for
+#                                                                    Hyperscale edition.
+#    --keys                                                        : The list of AKV keys for the SQL
+#                                                                    Database.
+#    --ledger-on                                                   : Create a ledger database, in
+#                                                                    which the integrity of all data
+#                                                                    is protected by the ledger
+#                                                                    feature. All tables in the
+#                                                                    ledger database must be ledger
+#                                                                    tables. Note: the value of this
+#                                                                    property cannot be changed after
+#                                                                    the database has been created.
+#                                                                    Allowed values: Disabled,
+#                                                                    Enabled.
+#    --license-type                                                : The license type to apply for
+#                                                                    this
+#                                                                    database.``LicenseIncluded`` if
+#                                                                    you need a license, or
+#                                                                    ``BasePrice``if you have a
+#                                                                    license and are eligible for the
+#                                                                    Azure HybridBenefit.  Allowed
+#                                                                    values: BasePrice,
+#                                                                    LicenseIncluded.
+#    --maint-config-id -m                                          : Specified maintenance
+#                                                                    configuration id or name for
+#                                                                    this resource.
+#    --max-size                                                    : The max storage size. If no unit
+#                                                                    is specified, defaults to bytes
+#                                                                    (B).
+#    --no-wait                                                     : Do not wait for the long-running
+#                                                                    operation to finish.
+#    --preferred-enclave-type                                      : Specifies type of enclave for
+#                                                                    this resource.  Allowed values:
+#                                                                    Default, VBS.
+#    --read-scale                                                  : If enabled, connections that
+#                                                                    have application intent set to
+#                                                                    readonly in their connection
+#                                                                    string may be routed to a
+#                                                                    readonly secondary replica. This
+#                                                                    property is only settable for
+#                                                                    Premium and Business Critical
+#                                                                    databases.  Allowed values:
+#                                                                    Disabled, Enabled.
+#    --tags                                                        : Space-separated tags:
+#                                                                    key[=value] [key[=value] ...].
+#                                                                    Use "" to clear existing tags.
+#    --umi --user-assigned-identity-id                             : The list of user assigned
+#                                                                    identity for the SQL Database.
+#    --yes -y                                                      : Do not prompt for confirmation.
+#    --zone-redundant -z                                           : Specifies whether to enable zone
+#                                                                    redundancy. Default is true if
+#                                                                    no value is specified.  Allowed
+#                                                                    values: false, true.
+#
+# Creation Arguments
+#    --catalog-collation                                           : Collation of the metadata
+#                                                                    catalog.  Allowed values:
+#                                                                    DATABASE_DEFAULT,
+#                                                                    SQL_Latin1_General_CP1_CI_AS.
+#    --collation                                                   : The collation of the database.
+#    --sample-name                                                 : The name of the sample schema to
+#                                                                    apply when creating
+#                                                                    thisdatabase.  Allowed values:
+#                                                                    AdventureWorksLT.
+#
+# Performance Level (components) Arguments
+#    --capacity -c                                                 : The capacity component of the
+#                                                                    sku in integer number of DTUs or
+#                                                                    vcores.
+#    --edition --tier -e                                           : The edition component of the
+#                                                                    sku. Allowed values include:
+#                                                                    Basic, Standard, Premium,
+#                                                                    GeneralPurpose,
+#                                                                    BusinessCritical, Hyperscale.
+#    --family -f                                                   : The compute generation component
+#                                                                    of the sku (for vcore skus
+#                                                                    only). Allowed values include:
+#                                                                    Gen4, Gen5.
+#
+# Performance Level Arguments
+#    --elastic-pool                                                : The name or resource id of the
+#                                                                    elastic pool to create the
+#                                                                    database in.
+#    --service-level-objective --service-objective                 : The service objective for the
+#                                                                    new database. For example:
+#                                                                    Basic, S0, P1, GP_Gen4_1,
+#                                                                    GP_S_Gen5_8, BC_Gen5_2,
+#                                                                    HS_Gen5_32.
+#
+# Serverless offering Arguments
+#    --auto-pause-delay                                            : Time in minutes after which
+#                                                                    database is automatically
+#                                                                    paused. A value of -1 means that
+#                                                                    automatic pause is disabled.
+#    --compute-model                                               : The compute model of the
+#                                                                    database.  Allowed values:
+#                                                                    Provisioned, Serverless.
+#    --min-capacity                                                : Minimal capacity that database
+#                                                                    will always have allocated, if
+#                                                                    not paused.

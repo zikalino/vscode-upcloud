@@ -1,0 +1,37 @@
+type: layout-form
+id: root
+header:
+  - type: header
+    title: Key Vault
+    logo: icon.webp
+form:
+  - $include: __resource_group_select_or_create.yaml
+
+  - type: fieldset
+    subitems:
+      - type: row
+        subitems:
+          - type: textfield
+            name: Name
+            produces:
+              - variable: keyvault_name
+      - $include: __region_selector.yaml
+        prefix: keyvault_
+      - type: 'action-row'
+        name: Create Key Vault
+        consumes:
+          - variable: resource_group_name
+          - variable: keyvault_name
+          - variable: keyvault_region
+        verify: |
+            az keyvault show --resource-group ${resource_group_name} --name ${keyvault_name}
+        install: az keyvault create --resource-group ${resource_group_name} --name ${keyvault_name} --location ${keyvault_region}
+        uninstall: az keyvault delete --resource-group ${resource_group_name} --name ${keyvault_name} --yes
+
+footer:
+  - type: footer
+    id: footer
+    subitems:
+      - type: button
+        id: install_button
+        text: Create

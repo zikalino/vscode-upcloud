@@ -1,0 +1,47 @@
+type: layout-form
+id: root
+header:
+  - type: header
+    title: Azure Prerequisites
+    logo: icon.webp
+form:
+  #
+  # Azure CLI
+  #
+  - type: fieldset
+    id: fieldset_esp_idf
+    platform: win32
+    subitems:
+      - type: 'action-row'
+        id: install-git
+        name: Install Git
+        verify: git --version
+        install: winget install git
+      - type: 'action-row'
+        platform: win32
+        id: install-azure-cli
+        name: Install Azure CLI
+        banner: |
+            Installing Azure CLI. Azure CLI will be used by
+            this extension to access Azure
+        verify: az --version
+        install: | 
+                winget install -e --id Microsoft.AzureCLI
+                $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+      - type: 'action-row'
+        id: clone-azure-res-api
+        name: Clone Azure REST API
+        consumes:
+          - variable: version
+        verify: if (Test-path ~/azure-rest-api-specs -PathType container) { exit 0 } else { exit 1}
+        install: |
+            cd ~
+            git clone --recursive https://github.com/Azure/azure-rest-api-specs.git
+
+footer:
+  - type: footer
+    id: footer
+    subitems:
+      - type: button
+        id: install_button
+        text: Create

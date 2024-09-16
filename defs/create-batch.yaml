@@ -1,0 +1,74 @@
+type: layout-form
+id: root
+header:
+  - type: header
+    title: Batch
+    logo: icon.webp
+form:
+  - $include: __resource_group_select_or_create.yaml
+
+  - type: fieldset
+    id: fieldset-container-instance-creation
+    subitems:
+      - type: row
+        id: container-instance-name-row
+        subitems:
+          - type: textfield
+            name: Container Name
+            produces:
+              - variable: container_name
+      - type: row
+        id: container-instance-image-row
+        subitems:
+          - type: textfield
+            name: Container Name
+            produces:
+              - variable: image
+      - type: 'action-row'
+        id: create-container-instance
+        name: Create Container Instance
+        consumes:
+          - variable: resource_group_name
+          - variable: container_name
+          - variable: image
+        verify: |
+            az container show --resource-group ${resource_group_name} --name ${container_name}
+        install: az container create --resource-group ${resource_group_name} --name ${container_name} --image ${image}
+        uninstall: az container delete --resource-group ${resource_group_name} --name ${container_name}
+
+footer:
+  - type: footer
+    id: footer
+    subitems:
+      - type: button
+        id: install_button
+        text: Create
+
+#
+# az batch account create
+#
+# Arguments
+#    --location -l       [Required] : The region in which to create the account.
+#    --name -n           [Required] : Name of the Batch account.
+#    --resource-group -g [Required] : Name of the resource group.
+#    --encryption-key-identifier    : Part of the encryption configuration for the Batch account.
+#                                     Full path to the versioned secret. Example https://mykeyvault.v
+#                                     ault.azure.net/keys/testkey/6e34a81fef704045975661e297a4c053.
+#    --encryption-key-source        : Part of the encryption configuration for the Batch account.
+#                                     Type of the key source. Can be either Microsoft.Batch or
+#                                     Microsoft.KeyVault.  Allowed values: Microsoft.Batch,
+#                                     Microsoft.KeyVault.
+#    --keyvault                     : The KeyVault name or resource ID to be used for an account with
+#                                     a pool allocation mode of 'User Subscription'.
+#    --no-wait                      : Do not wait for the long-running operation to finish.
+#    --public-network-access        : The network access type for accessing Azure Batch account.
+#                                     Values can either be enabled or disabled.  Allowed values:
+#                                     Disabled, Enabled.
+#    --storage-account              : The storage account name or resource ID to be used for auto
+#                                     storage.
+#    --tags                         : Space-separated tags in 'key[=value]' format.
+#
+# Identity Arguments
+#    --mi-system-assigned           : Set the system managed identity on the batch services account.
+#    --mi-user-assigned             : Resource ID of the user assigned identity for the batch
+#                                     services account.

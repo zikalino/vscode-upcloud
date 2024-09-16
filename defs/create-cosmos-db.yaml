@@ -1,0 +1,174 @@
+type: layout-form
+id: root
+header:
+  - type: header
+    title: Cosmos DB
+    logo: icon.webp
+form:
+  - $include: __resource_group_select_or_create.yaml
+
+  - type: fieldset
+    id: fieldset-container-instance-creation
+    subitems:
+      - type: row
+        subitems:
+          - type: textfield
+            name: Container Name
+            produces:
+              - variable: container_name
+      - type: row
+        id: container-instance-image-row
+        subitems:
+          - type: textfield
+            name: Container Name
+            produces:
+              - variable: image
+      - type: 'action-row'
+        id: create-container-instance
+        name: Create Container Instance
+        consumes:
+          - variable: resource_group_name
+          - variable: container_name
+          - variable: image
+        verify: |
+            az container show --resource-group ${resource_group_name} --name ${container_name}
+        install: az container create --resource-group ${resource_group_name} --name ${container_name} --image ${image}
+        uninstall: az container delete --resource-group ${resource_group_name} --name ${container_name}
+
+footer:
+  - type: footer
+    id: footer
+    subitems:
+      - type: button
+        id: install_button
+        text: Create
+
+# Arguments
+#    --name -n                         [Required] : Name of the Cosmos DB database account.
+#    --resource-group -g               [Required] : Name of resource group. You can configure the
+#                                                   default group using `az configure --defaults
+#                                                   group=<name>`.
+#    --assign-identity                            : Assign system or user assigned identities
+#                                                   separated by spaces. Use '[system]' to refer
+#                                                   system assigned identity.
+#    --capabilities                               : Set custom capabilities on the Cosmos DB database
+#                                                   account.
+#    --default-consistency-level                  : Default consistency level of the Cosmos DB
+#                                                   database account.  Allowed values:
+#                                                   BoundedStaleness, ConsistentPrefix, Eventual,
+#                                                   Session, Strong.
+#    --default-identity                           : The primary identity to access key vault in CMK
+#                                                   related features. e.g. 'FirstPartyIdentity',
+#                                                   'SystemAssignedIdentity' and more. User-assigned
+#                                                   identities are specified in format
+#                                                   'UserAssignedIdentity=<resource ID of the user-
+#                                                   assigned identity>'.
+#    --disable-key-based-metadata-write-access    : Disable write operations on metadata resources
+#                                                   (databases, containers, throughput) via account
+#                                                   keys.  Allowed values: false, true.
+#    --enable-analytical-storage                  : Flag to enable log storage on the account.
+#                                                   Allowed values: false, true.
+#    --enable-automatic-failover                  : Enables automatic failover of the write region in
+#                                                   the rare event that the region is unavailable due
+#                                                   to an outage. Automatic failover will result in a
+#                                                   new write region for the account and is chosen
+#                                                   based on the failover priorities configured for
+#                                                   the account.  Allowed values: false, true.
+#    --enable-burst-capacity                      : Flag to Enable/Disable burst capacity feature.
+#                                                   Allowed values: false, true.
+#        Usage:    --enable-burst-capacity true
+#        Default:  false
+#        The accepted values for the enable-burst-capacity are true and false.
+#    --enable-free-tier                 [Preview] : If enabled the account is free-tier.
+#                                                   Allowed values: false, true.
+#        Argument '--enable-free-tier' is in preview and under development. Reference and
+#        support levels: https://aka.ms/CLI_refstatus
+#    --enable-multiple-write-locations            : Enable Multiple Write Locations.  Allowed values:
+#                                                   false, true.
+#    --enable-partition-merge                     : Flag to enable partition merge on the account.
+#                                                   Allowed values: false, true.
+#    --enable-virtual-network                     : Enables virtual network on the Cosmos DB database
+#                                                   account.  Allowed values: false, true.
+#    --ip-range-filter                            : Firewall support. Specifies the set of IP
+#                                                   addresses or IP address ranges in CIDR form to be
+#                                                   included as the allowed list of client IPs for a
+#                                                   given database account. IP addresses/ranges must
+#                                                   be comma-separated and must not contain any
+#                                                   spaces.
+#    --key-uri                                    : The URI of the key vault.
+#    --kind                                       : The type of Cosmos DB database account to create.
+#                                                   Allowed values: GlobalDocumentDB, MongoDB, Parse.
+#                                                   Default: GlobalDocumentDB.
+#    --locations                                  : Add a location to the Cosmos DB database account.
+#        Usage:          --locations KEY=VALUE [KEY=VALUE ...]
+#        Required Keys:  regionName, failoverPriority
+#        Optional Key:   isZoneRedundant
+#        Default:        single region account in the location of the specified resource group.
+#        Failover priority values are 0 for write regions and greater than 0 for read regions. A
+#        failover priority value must be unique and less than the total number of regions.
+#        Multiple locations can be specified by using more than one `--locations` argument.
+#    --max-interval                               : When used with Bounded Staleness consistency,
+#                                                   this value represents the time amount of
+#                                                   staleness (in seconds) tolerated. Accepted range
+#                                                   for this value is 5 - 86400.  Default: 5.
+#    --max-staleness-prefix                       : When used with Bounded Staleness consistency,
+#                                                   this value represents the number of stale
+#                                                   requests tolerated. Accepted range for this value
+#                                                   is 10 - 2,147,483,647.  Default: 100.
+#    --minimal-tls-version                        : Indicate the minimum allowed TLS version.
+#                                                   Allowed values: Tls, Tls11, Tls12.
+#        Usage:    --minimal-tls-version TLSVersion
+#        Default:  Tls, except for Cassandra and Mongo APIs, which only work with Tls12
+#        The accepted values for the minimal TLS version are 'Tls', 'Tls11', and 'Tls12', which
+#        correspond to the
+#        TLS versions 1.0, 1.1, and 1.2.
+#    --network-acl-bypass                         : Flag to enable or disable Network Acl Bypass.
+#                                                   Allowed values: AzureServices, None.
+#    --network-acl-bypass-resource-ids -i         : List of Resource Ids to allow Network Acl Bypass.
+#    --public-network-access -p                   : Sets public network access in server to either
+#                                                   Enabled, Disabled, or SecuredByPerimeter.
+#                                                   Allowed values: DISABLED, ENABLED,
+#                                                   SECUREDBYPERIMETER.
+#    --server-version                             : Valid only for MongoDB accounts.  Allowed values:
+#                                                   3.2, 3.6, 4.0, 4.2.
+#    --tags                                       : Space-separated tags: key[=value] [key[=value]
+#                                                   ...]. Use "" to clear existing tags.
+#    --virtual-network-rules                      : ACL's for virtual network.
+#
+# Analytical Storage Configuration Arguments
+#    --analytical-storage-schema-type --as-schema : Schema type for analytical storage.  Allowed
+#                                                   values: FullFidelity, WellDefined.
+#
+# Backup Policy Arguments
+#    --backup-interval                            : The frequency(in minutes) with which backups are
+#                                                   taken (only for accounts with periodic mode
+#                                                   backups).
+#    --backup-policy-type                         : The type of backup policy of the account to
+#                                                   create.  Allowed values: Continuous, Periodic.
+#    --backup-redundancy                          : The redundancy type of the backup Storage
+#                                                   account.  Allowed values: Geo, Local, Zone.
+#    --backup-retention                           : The time(in hours) for which each backup is
+#                                                   retained (only for accounts with periodic mode
+#                                                   backups).
+#    --continuous-tier                            : The tier of Continuous backup.  Allowed values:
+#                                                   Continuous30Days, Continuous7Days.
+#
+# Restore Arguments
+#    --databases-to-restore                       : Add a database and its collection names to
+#                                                   restore.
+#        Usage:          --databases-to-restore name=DatabaseName collections=collection1
+#        [collection2 ...].
+#    --gremlin-databases-to-restore               : Add a gremlin database and its graph names to
+#                                                   restore.
+#        Usage:          --gremlin-databases-to-restore name=DatabaseName graphs=graph1 [graph2 ...].
+#    --is-restore-request -r                      : Restore from an existing/deleted account.
+#                                                   Allowed values: false, true.
+#    --restore-source                             : The restorable-database-account Id of the source
+#                                                   account from which the account has to be
+#                                                   restored. Required if --is-restore-request is set
+#                                                   to true.
+#    --restore-timestamp                          : The timestamp to which the account has to be
+#                                                   restored to. Required if --is-restore-request is
+#                                                   set to true.
+#    --tables-to-restore                          : Add table names to restore.
+#        Usage:          --tables-to-restore tables=table1 [table2 ...].

@@ -1,0 +1,6 @@
+- type: row
+  subitems:
+    - type: textfield
+      name: Tags (separated by space)
+      produces:
+        - variable: tags

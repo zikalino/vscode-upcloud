@@ -1,0 +1,171 @@
+type: layout-form
+id: root
+header:
+  - type: header
+    title: App Service
+    logo: icon.webp
+form:
+  - $include: __resource_group_select_or_create.yaml
+
+  - type: fieldset
+    subitems:
+      - type: row
+        subitems:
+          - type: textfield
+            name: Name
+            produces:
+              - variable: app_service_plan_name
+          - type: combo
+            name: SKU
+            items:
+              - id: F1
+                label: F1 - Free
+              - id: D1
+                label: D1 - Shared
+              - id: B1
+                label: B1 - Basic Small
+              - id: B2
+                label: B2 - Basic Medium
+              - id: B3
+                label: B3 - Basic Large
+              - id: S1
+                label: S1 - Standard Small
+              - id: P1V2
+                label: P1V2 - Premium V2 Small
+              - id: P2V2
+                label: P2V2 - Premium V2 Medium
+              - id: P3V2
+                label: P3V2 - Premium V2 Large
+              - id: P0V3
+                label: P0V3 - Premium V3 Extra Small
+              - id: P1V3
+                label: P1V3 - Premium V3 Small
+              - id: P2V3
+                label: P2V3 - Premium V3 Medium
+              - id: P3V3
+                label: P3V3 - Premium V3 Large
+              - id: P1MV3
+                label: P1MV3 - Premium Memory Optimized V3 Small
+              - id: P2MV3
+                label: P2MV3 - Premium Memory Optimized V3 Medium
+              - id: P3MV3
+                label: P3MV3 - Premium Memory Optimized V3 Large
+              - id: P4MV3
+                label: P4MV3 - Premium Memory Optimized V3 Extra Large
+              - id: P5MV3
+                label: P5MV3 - Premium Memory Optimized V3 Extra Extra Large
+              - id: I1
+                label: I1 - Isolated Small
+              - id: I2
+                label: I2 - Isolated Medium
+              - id: I3
+                label: I3 - Isolated Large
+              - id: I1V2
+                label: I1V2 - Isolated V2 I1V2
+              - id: I2V2
+                label: I2V2 - Isolated V2 I2V2
+              - id: I3V2
+                label: I3V2 - Isolated V2 I3V2
+              - id: I4V2
+                label: I4V2 - Isolated V2 I4V2
+              - id: I5V2
+                label: I5V2 - Isolated V2 I5V2
+              - id: I6V2
+                label: I6V2 - Isolated V2 I6V2
+              - id: I1MV2
+                label: I1MV2 - Isolated Memory Optimized V2 I1MV2
+              - id: I2MV2
+                label: I2MV2 - Isolated Memory Optimized V2 I2MV2
+              - id: I3MV2
+                label: I3MV2 - Isolated Memory Optimized V2 I3MV2
+              - id: I4MV2
+                label: I4MV2 - Isolated Memory Optimized V2 I4MV2
+              - id: I5MV2
+                label: I5MV2 - Isolated Memory Optimized V2 I5MV2
+              - id: WS1
+                label: WS1 - Logic Apps Workflow Standard 1
+              - id: WS2
+                label: WS2 - Logic Apps Workflow Standard 2
+              - id: WS3
+                label: WS3 - Logic Apps Workflow Standard 3
+            produces:
+              - variable: appservice_sku
+          - type: combo
+            name: OS Type
+            items:
+              - Linux
+              - Windows
+            produces:
+              - variable: os_type
+
+      - type: 'action-row'
+        name: Create App Service
+        consumes:
+          - variable: resource_group_name
+          - variable: app_service_plan_name
+          - variable: appservice_sku
+          - variable: os_type
+            parameter: --is-linux
+            include-if:
+              variable: os_type
+              value: Linux
+        verify: |
+            az appservice plan show --resource-group ${resource_group_name} --name ${app_service_plan_name}
+        install: az appservice plan create --resource-group ${resource_group_name} --name ${app_service_plan_name} --sku ${appservice_sku}
+        uninstall: az appservice plan delete --resource-group ${resource_group_name} --name ${app_service_plan_name} --yes
+
+footer:
+  - type: footer
+    id: footer
+    subitems:
+      - type: button
+        id: install_button
+        text: Create
+
+# Command
+#    az appservice plan create : Create an app service plan.
+#
+# Arguments
+#    --name -n           [Required] : Name of the new app service plan.
+#    --resource-group -g [Required] : Name of resource group. You can configure the default group
+#                                     using `az configure --defaults group=<name>`.
+#    --app-service-environment -e   : Name or ID of the app service environment. If you want to
+#                                     create the app service plan in different subscription than the
+#                                     app service environment, please use the resource ID for --app-
+#                                     service-environment parameter.
+#    --hyper-v                      : Host Windows Container Web App on Hyper-V worker.
+#    --is-linux                     : Host web app on Linux worker.
+#    --location -l                  : Location. Values from: `az account list-locations`. You can
+#                                     configure the default location using `az configure --defaults
+#                                     location=<location>`.
+#    --no-wait                      : Do not wait for the long-running operation to finish.
+#    --number-of-workers            : Number of workers to be allocated.  Default: 1.
+#    --per-site-scaling             : Enable per-app scaling at the App Service plan level to allow
+#                                     for scaling an app independently from the App Service plan that
+#                                     hosts it.
+#    --sku                          : The pricing tiers, e.g., F1(Free), D1(Shared), B1(Basic Small),
+#                                     B2(Basic Medium), B3(Basic Large), S1(Standard Small),
+#                                     P1V2(Premium V2 Small), P2V2(Premium V2 Medium), P3V2(Premium
+#                                     V2 Large), P0V3(Premium V3 Extra Small), P1V3(Premium V3
+#                                     Small), P2V3(Premium V3 Medium), P3V3(Premium V3 Large),
+#                                     P1MV3(Premium Memory Optimized V3 Small), P2MV3(Premium Memory
+#                                     Optimized V3 Medium), P3MV3(Premium Memory Optimized V3 Large),
+#                                     P4MV3(Premium Memory Optimized V3 Extra Large), P5MV3(Premium
+#                                     Memory Optimized V3 Extra Extra Large), I1 (Isolated Small), I2
+#                                     (Isolated Medium), I3 (Isolated Large), I1V2 (Isolated V2
+#                                     I1V2), I2V2 (Isolated V2 I2V2), I3V2 (Isolated V2 I3V2), I4V2
+#                                     (Isolated V2 I4V2), I5V2 (Isolated V2 I5V2), I6V2 (Isolated V2
+#                                     I6V2), I1MV2 (Isolated Memory Optimized V2 I1MV2), I2MV2
+#                                     (Isolated Memory Optimized V2 I2MV2), I3MV2 (Isolated Memory
+#                                     Optimized V2 I3MV2), I4MV2 (Isolated Memory Optimized V2
+#                                     I4MV2), I5MV2 (Isolated Memory Optimized V2 I5MV2), WS1 (Logic
+#                                     Apps Workflow Standard 1), WS2 (Logic Apps Workflow Standard
+#                                     2), WS3 (Logic Apps Workflow Standard 3).  Allowed values: B1,
+#                                     B2, B3, D1, F1, FREE, I1, I1MV2, I1V2, I2, I2MV2, I2V2, I3,
+#                                     I3MV2, I3V2, I4MV2, I4V2, I5MV2, I5V2, I6V2, P0V3, P1MV3, P1V2,
+#                                     P1V3, P2MV3, P2V2, P2V3, P3MV3, P3V2, P3V3, P4MV3, P5MV3, S1,
+#                                     S2, S3, SHARED, WS1, WS2, WS3.  Default: B1.
+#    --tags                         : Space-separated tags: key[=value] [key[=value] ...]. Use "" to
+#                                     clear existing tags.
+#    --zone-redundant -z            : Enable zone redundancy for high availability. Cannot be changed
+#                                     after plan creation. Minimum instance count is 3.

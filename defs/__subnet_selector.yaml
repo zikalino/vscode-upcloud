@@ -1,0 +1,27 @@
+- type: row
+  subitems:
+    - type: combo
+      name: Select Virtual Network
+      items: []
+      source:
+        cmd: |
+          az network vnet list
+        path-id: $[*].name
+        path-name: $[*].name
+      produces:
+        - variable: vnet_name
+        - variable: vnet_resource_group
+          path: $.resourceGroup
+    - type: combo
+      name: Select Subnet
+      items: []
+      consumes:
+        - variable: vnet_resource_group
+        - variable: vnet_name
+      source:
+        cmd: |
+          az network vnet subnet list --resource-group ${vnet_resource_group} --vnet-name ${vnet_name}
+        path-id: $[*].id
+        path-name: $[*].name
+      produces:
+        - variable: subnet_name

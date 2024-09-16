@@ -1,0 +1,74 @@
+- name: Basic Resources
+  submenu:
+    - name: Resource Group
+      location: az_group_create.yaml
+- name: Virtual Machines
+  submenu:
+    - name: Create Virtual Machine
+      location: create-virtual-machine.yaml
+    - name: Create Managed Disk
+      location: create-managed-disk.yaml
+    - name: Create Blob from Managed Disk
+      location: create-blob-from-managed-disk.yaml
+- name: Containers
+  submenu:
+    - name: Create Container Instance
+      location: create-container-instance.yaml
+    - name: Create Container Registry
+      location: create-container-registry.yaml
+- name: Databases
+  submenu:
+    - name: Create MySQL
+      location: create-mysql.yaml
+    - name: Create PostgreSQL
+      location: create-postgresql.yaml
+    - name: Create MariaDB
+      location: create-mariadb.yaml
+    - name: Create SQL Database
+      location: create-sql-database.yaml
+    - name: Create Cosmos DB
+      location: create-cosmos-db.yaml
+- name: Storage
+  submenu:
+    - name: Create Storage Account
+      location: create-storage-account.yaml
+    - name: Create Blob Storage Container
+      location: create-storage-container.yaml
+- name: Shared Image Gallery
+  submenu:
+    - name: Create Shared Image Gallery
+      location: create-shared-image-gallery.yaml
+- name: Web Applications
+  submenu:
+    - name: Create Static Website
+      location: create-static-website.yaml
+    - name: Create App Configuration
+      location: create-app-configuration.yaml
+    - name: Create App Service
+      location: create-app-service.yaml
+    - name: Create Function
+      location: create-function.yaml
+    - name: Create Logic App
+      location: create-logic-app.yaml
+    - name: Create Web App
+      location: create-webapp.yaml
+- name: Other
+  submenu:
+    - name: Create AKS
+      location: create-aks.yaml
+    - name: Create API Management
+      location: create-api-managemenent.yaml
+    - name: Create Automation
+      location: create-automation.yaml
+    - name: Create Azure Files
+      location: create-azure-files.yaml
+    - name: Create Batch
+      location: create-batch.yaml
+    - name: Create Event Grid
+      location: create-event-grid.yaml
+    - name: Create Keyvault
+      location: create-keyvault.yaml
+    - name: Create Load Balancer
+      location: create-load-balancer.yaml
+    - name: Create Virtual Network
+      location: create-virtual-network.yaml

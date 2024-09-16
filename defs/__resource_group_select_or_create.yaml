@@ -1,0 +1,55 @@
+- type: fieldset
+  subitems:
+    - type: radio-group
+      subitems:
+        - type: radio
+          value: select
+          text: Existing Resource Group
+          variable: resource-group-creation
+          default: true
+        - type: radio
+          value: create
+          text: New Resource Group
+          variable: resource-group-creation
+          default: false
+  
+- type: fieldset
+  show-if:
+    variable: resource-group-creation
+    value: create
+  subitems:
+    - $include: __region_selector.yaml
+    - type: row
+      subitems:
+        - type: textfield
+          name: Name
+          produces:
+            - variable: resource_group_name
+    - type: 'action-row'
+      name: Create Resource Group
+      consumes:
+        - variable: region
+        - variable: resource_group_name
+      verify: |
+          $out = az group exists --name ${resource_group_name}
+          if ($out -like '*true*') { exit 0 } else { exit 1 }
+      install: az group create --name ${resource_group_name} --location ${region}
+      uninstall: az group delete --name ${resource_group_name} --yes
+
+- type: fieldset
+  show-if:
+    variable: resource-group-creation
+    value: select
+  subitems:
+    - type: row
+      subitems:
+        - type: combo
+          name: Select Resource Group
+          items: []
+          source:
+            cmd: |
+              az group list
+            path-id: $[*].name
+            path-name: $[*].name
+          produces:
+            - variable: resource_group_name

@@ -1,0 +1,14 @@
+- type: row
+  subitems:
+    - type: combo
+      name: Select Virtual Machine Size
+      items: []
+      consumes:
+        - variable: virtual_machine_region
+      source:
+        cmd: |
+          az vm list-sizes --location ${virtual_machine_region}
+        path-id: $[*].name
+        path-name: $[*].name
+      produces:
+        - variable: vm_size

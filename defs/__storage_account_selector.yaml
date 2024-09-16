@@ -1,0 +1,65 @@
+- type: fieldset
+  subitems:
+    - type: radio-group
+      id: radio-group-storage-account-select-or-create
+      subitems:
+        - type: radio
+          id: radio-storage-account-select
+          value: select
+          text: Existing Storage Account
+          variable: storage-account-creation
+          default: true
+        - type: radio
+          id: radio-storage-account-create
+          value: create
+          text: New Storage Account
+          variable: storage-account-creation
+          default: false
+  
+- type: fieldset
+  id: fieldset-storage-account-creation
+  show-if:
+    variable: storage-account-creation
+    value: create
+  subitems:
+    - $include: __region_selector.yaml
+      prefix: storage_account_
+    - type: row
+      id: storage-account-name-row
+      subitems:
+        - type: textfield
+          name: Name
+          produces:
+            - variable: storage_account_name
+    - type: 'action-row'
+      id: create-storage-account
+      name: Create Storage Account
+      consumes:
+        - variable: storage_account_region
+        - variable: storage_account_name
+      verify: |
+          $out = az group exists --name ${storage_account_name} --resource-group ${resource_group_name}
+          if ($out -like '*true*') { exit 0 } else { exit 1 }
+      install: az storage account create  --resource-group ${resource_group_name} --name ${storage_account_name} --location ${storage_account_region}
+      uninstall: az storage account delete --resource-group ${resource_group_name} --name ${storage_account_name}
+
+- type: fieldset
+  id: fieldset-storage-account-selection
+  show-if:
+    variable: storage-account-creation
+    value: select
+  subitems:
+    - type: row
+      id: storage-account-selection-row
+      subitems:
+        - type: combo
+          id: storage-account-selection-combo
+          name: Select Storage Account
+          items: []
+          source:
+            cmd: |
+              az storage account list
+            path-id: $[*].name
+            path-name: $[*].name
+          produces:
+            - variable: storage_account_name

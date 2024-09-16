@@ -1,0 +1,71 @@
+type: layout-form
+id: root
+header:
+  - type: header
+    title: App Configuration
+    logo: icon.webp
+form:
+  - $include: __resource_group_select_or_create.yaml
+
+  - type: fieldset
+    subitems:
+      - type: row
+        subitems:
+          - type: textfield
+            name: Name
+            produces:
+              - variable: app_configuration_name
+      - $include: __region_selector.yaml
+        prefix: app_configuration_
+      - type: 'action-row'
+        name: Create App Configuration
+        consumes:
+          - variable: resource_group_name
+          - variable: app_configuration_name
+          - variable: app_configuration_region
+        verify: |
+            az appconfig show --resource-group ${resource_group_name} --name ${app_configuration_name}
+        install: az appconfig create --resource-group ${resource_group_name} --name ${app_configuration_name} --location ${app_configuration_region}
+        uninstall: az appconfig delete --resource-group ${resource_group_name} --name ${app_configuration_name} --yes
+
+footer:
+  - type: footer
+    id: footer
+    subitems:
+      - type: button
+        id: install_button
+        text: Create
+
+# Arguments
+#     --location -l       [Required] : Location. Values from: `az account list-locations`. You can
+#                                     configure the default location using `az configure --defaults
+#                                     location=<location>`.
+#    --name -n           [Required] : Name of the App Configuration. You can configure the default
+#                                     name using `az configure --defaults
+#                                     app_configuration_store=<name>`.
+#    --resource-group -g [Required] : Name of resource group. You can configure the default group
+#                                     using `az configure --defaults group=<name>`.
+#    --assign-identity              : Space-separated list of managed identities to be assigned. Use
+#                                     "[system]" to refer to system-assigned managed identity or a
+#                                     resource ID to refer to user-assigned managed identity. If this
+#                                     argument is provided without any value, system-assigned managed
+#                                     identity will be assigned by default. If this argument is not
+#                                     provided, no managed identities will be assigned to this App
+#                                     Configuration store.
+#    --disable-local-auth           : Disable all authentication methods other than AAD
+#                                     authentication.  Allowed values: false, true.
+#    --enable-public-network -e     : When true, requests coming from public networks have permission
+#                                     to access this store while private endpoint is enabled. When
+#                                     false, only requests made through Private Links can reach this
+#                                     store.  Allowed values: false, true.
+#    --enable-purge-protection -p   : Property specifying whether protection against purge is enabled
+#                                     for this App Configuration. Setting this property to true
+#                                     activates protection against purge for this App Configuration
+#                                     and its contents. Enabling this functionality is irreversible.
+#                                     Allowed values: false, true.
+#    --retention-days               : Number of days to retain the soft delete enabled App
+#                                     Configuration after deleting. Must be a positive integer
+#                                     between 0 and 7.
+#    --sku                          : The sku of App Configuration.  Allowed values: Free, Standard.
+#                                     Default: Standard.
+#    --tags                         : Space-separated tags: key[=value] [key[=value] ...].

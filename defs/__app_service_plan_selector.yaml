@@ -1,0 +1,70 @@
+- type: fieldset
+  subitems:
+    - type: radio-group
+      subitems:
+        - type: radio
+          id: radio-service-plan-select
+          value: select
+          text: Existing App Service Plan
+          variable: service-plan-creation
+          default: true
+        - type: radio
+          id: radio-service-plan-create
+          value: create
+          text: New App Service Plan
+          variable: service-plan-creation
+          default: false
+  
+- type: fieldset
+  id: fieldset-service-plan-creation
+  show-if:
+    variable: service-plan-creation
+    value: create
+  subitems:
+    - $include: __region_selector.yaml
+      prefix: service_plan_
+    - type: row
+      id: service-plan-name-row
+      subitems:
+        - type: textfield
+          id: moo-combo
+          name: Name
+          produces:
+            - variable: service_plan_name
+    - type: 'action-row'
+      id: create-service-plan
+      name: Create App Service Plan
+      consumes:
+        - variable: resource_group_name
+        - variable: service_plan_name
+        - variable: service_plan_region
+      verify: |
+          $out = az appservice plan show --name ${service_plan_name} --resource-group ${resource_group_name}
+      install: az appservice plan create --resource-group ${resource_group_name} --name ${service_plan_name} --location ${service_plan_region}
+      uninstall: az appservice plan delete --resource-group ${resource_group_name} --name ${service_plan_name}
+
+- type: fieldset
+  id: fieldset-service-plan-selection
+  show-if:
+    variable: service-plan-creation
+    value: select
+  subitems:
+    - type: row
+      id: service-plan-selection-row
+      subitems:
+        - type: combo
+          id: service-plan-selection-combo
+          name: Select App Service Plan
+          items: []
+          source:
+            cmd: |
+              az appservice plan list
+            path-id: $[*].name
+            path-name: $[*].name
+          produces:
+            - variable: appservice_plan_name
+
+
+
+
+

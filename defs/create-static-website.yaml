@@ -1,0 +1,117 @@
+type: layout-form
+id: root
+header:
+  - type: header
+    title: Static Website
+    logo: icon.webp
+form:
+  - $include: __resource_group_select_or_create.yaml
+  - type: fieldset
+    subitems:
+      - type: text-block
+        font: header-1
+        content: Static WebApp Details
+      - type: row
+        subitems:
+          - type: combo
+            name: SKU
+            items:
+              - Free
+              - Standard
+            produces:
+              - variable: staticwebapp_sku
+      - type: row
+        subitems:
+          - type: textfield
+            name: Source
+            produces:
+              - variable: staticwebapp_source
+      - type: row
+        subitems:
+          - type: textfield
+            name: Branch
+            produces:
+              - variable: staticwebapp_branch
+      - type: row
+        subitems:
+          - type: textfield
+            name: Token
+            produces:
+              - variable: token
+      - type: row
+        subitems:
+          - type: textfield
+            name: Name
+            produces:
+              - variable: staticwebapp_name
+      - type: row
+        subitems:
+          - type: textfield
+            name: App Location
+            produces:
+              - variable: app_location
+          - type: textfield
+            name: API Location
+            produces:
+              - variable: api_location
+          - type: textfield
+            name: Output Location
+            produces:
+              - variable: output_location
+      - type: 'action-row'
+        id: create-disk-instance
+        name: Create Static Web Application
+        consumes:
+          - variable: resource_group_name
+          - variable: staticwebapp_name
+          - variable: staticwebapp_sku
+          - variable: staticwebapp_source
+          - variable: staticwebapp_branch
+          - variable: token
+          - variable: app_location
+          - variable: api_location
+          - variable: build_location
+        verify: |
+            az staticwebapp show --resource-group ${resource_group_name} --name ${staticwebapp_name}
+        install: az staticwebapp create --resource-group ${resource_group_name} --name ${staticwebapp_name} --sku ${staticwebapp_sku} --source ${staticwebapp_source} --branch ${staticwebapp_branch} --token ${token}
+        uninstall: az staticwebapp delete --resource-group ${resource_group_name} --name ${staticwebapp_name}
+
+footer:
+  - type: footer
+    id: footer
+    subitems:
+      - type: button
+        id: install_button
+        text: Create
+
+# Arguments
+#    --name -n           [Required] : Name of the static site.
+#    --resource-group -g [Required] : Name of resource group. You can configure the default group
+#                                     using `az configure --defaults group=<name>`.
+#    --api-location                 : Location of your Azure Functions code. For example, '/api'
+#                                     represents a folder called 'api'.
+#    --app-location                 : Location of your application code. For example, '/' represents
+#                                     the root of your app, while '/app' represents a directory
+#                                     called 'app'.  Default: /.
+#    --location -l                  : Location. Values from: `az account list-locations`. You can
+#                                     configure the default location using `az configure --defaults
+#                                     location=<location>`.  Default: centralus.
+#    --no-wait                      : Do not wait for the long-running operation to finish.
+#    --output-location              : The path of your build output relative to your apps location.
+#                                     For example, setting a value of 'build' when your app location
+#                                     is set to '/app' will cause the content at '/app/build' to be
+#                                     served.
+#    --sku                          : The pricing tiers for Static Web App.  Allowed values: Free,
+#                                     Standard.  Default: Free.
+#    --tags                         : Space-separated tags: key[=value] [key[=value] ...]. Use "" to
+#                                     clear existing tags.
+#
+# Source Control Arguments
+#    --branch -b                    : The target branch in the repository.
+#    --login-with-ado               : Use azure credentials to create an Azure Dev Ops personal
+#                                     access token.
+#    --login-with-github            : Interactively log in with Github to retrieve the Personal
+#                                     Access Token.
+#    --source -s                    : URL for the repository of the static site.
+#    --token -t                     : A user's GitHub or Azure Dev Ops repository token. This is used
+#                                     to create the Github Action or Dev Ops pipeline.

@@ -1,0 +1,14 @@
+- type: row
+  subitems:
+    - type: combo
+      name: Select SKU
+      items: []
+      consumes:
+        - variable: mysql_server_region
+      source:
+        cmd: |
+          az mysql flexible-server list-skus --location ${mysql_server_region}
+        path-id: $[*].name
+        path-name: $[*].name
+      produces:
+        - variable: mysql_server_sku

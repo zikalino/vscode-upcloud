@@ -1,0 +1,60 @@
+type: layout-form
+id: root
+header:
+  - type: header
+    title: Automation
+    logo: icon.webp
+form:
+  - $include: __resource_group_select_or_create.yaml
+
+  - type: fieldset
+    id: fieldset-container-instance-creation
+    subitems:
+      - type: row
+        id: container-instance-name-row
+        subitems:
+          - type: textfield
+            name: Container Name
+            produces:
+              - variable: container_name
+      - type: row
+        subitems:
+          - type: textfield
+            name: Container Name
+            produces:
+              - variable: image
+      - type: 'action-row'
+        name: Create Container Instance
+        consumes:
+          - variable: resource_group_name
+          - variable: container_name
+          - variable: image
+        verify: |
+            az container show --resource-group ${resource_group_name} --name ${container_name}
+        install: az container create --resource-group ${resource_group_name} --name ${container_name} --image ${image}
+        uninstall: az container delete --resource-group ${resource_group_name} --name ${container_name}
+
+footer:
+  - type: footer
+    id: footer
+    subitems:
+      - type: button
+        id: install_button
+        text: Create
+
+#
+# az automation account create
+#
+# Arguments
+#    --automation-account-name --name -n [Required] : The name of the automation account.
+#    --resource-group -g                 [Required] : Name of resource group. You can configure the
+#                                                     default group using `az configure --defaults
+#                                                     group=<name>`.
+#    --location -l                                  : Location. Values from: `az account list-
+#                                                     locations`. You can configure the default
+#                                                     location using `az configure --defaults
+#                                                     location=<location>`.
+#    --sku                                          : Account SKU.  Allowed values: Basic, Free.
+#                                                     Default: Basic.
+#    --tags                                         : Space-separated tags: key[=value] [key[=value]
+#                                                     ...]. Use "" to clear existing tags.

@@ -1,0 +1,59 @@
+type: layout-form
+id: root
+header:
+  - type: header
+    title: Shared Image Gallery
+    logo: icon.webp
+form:
+  - $include: __resource_group_select_or_create.yaml
+
+  - type: fieldset
+    subitems:
+      - type: row
+        subitems:
+          - type: textfield
+            name: Name
+            produces:
+              - variable: sig_name
+
+      - type: 'action-row'
+        name: Shared Image Gallery
+        consumes:
+          - variable: resource_group_name
+          - variable: sig_name
+        verify: |
+            az sig show --resource-group ${resource_group_name} --gallery-name ${sig_name}
+        install: az sig create --resource-group ${resource_group_name} --gallery-name ${sig_name}
+        uninstall: az sig delete --resource-group ${resource_group_name} --gallery-name ${sig_name}
+
+footer:
+  - type: footer
+    id: footer
+    subitems:
+      - type: button
+        id: install_button
+        text: Create
+
+# Arguments
+#    --gallery-name -r   [Required] : Gallery name.
+#    --resource-group -g [Required] : Name of resource group. You can configure the default group
+#                                     using `az configure --defaults group=<name>`.
+#    --description                  : The description of the gallery.
+#    --eula                         : Community gallery publisher eula.
+#    --location -l                  : Location. Values from: `az account list-locations`. You can
+#                                     configure the default location using `az configure --defaults
+#                                     location=<location>`.
+#    --public-name-prefix           : Community gallery public name prefix.
+#    --publisher-email              : Community gallery publisher contact email.
+#    --publisher-uri                : Community gallery publisher uri.
+#    --soft-delete        [Preview] : Enable soft-deletion for resources in this gallery,
+#                                     allowing them to be recovered within retention time.  Allowed
+#                                     values: false, true.
+#        Argument '--soft-delete' is in preview and under development. Reference and support
+#        levels: https://aka.ms/CLI_refstatus
+#    --tags                         : Space-separated tags: key[=value] [key[=value] ...]. Use "" to
+#                                     clear existing tags.
+#
+# Sharing Profile Arguments
+#    --permissions                  : This property allows you to specify the permission of sharing
+#                                     gallery.  Allowed values: Community, Groups, Private.
