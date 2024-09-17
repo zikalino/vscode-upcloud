@@ -20,38 +20,23 @@ export function activate (context: vscode.ExtensionContext) {
 
   mediaFolder = vscode.Uri.joinPath(extensionUri, 'media');
 
-  // let disposable = vscode.commands.registerCommand('vscode-azure.displayInstallerWelcome', () => {
+  // let disposable = vscode.commands.registerCommand('vscode-upcloud.displayInstallerWelcome', () => {
   //  displayInstallerWelcome();
   //});
 
   let disposable = vscode.commands.registerCommand(
-    'vscode-azure.displayPrerequisitesView',
+    'vscode-upcloud.displayPrerequisitesView',
     () => {
       displayPrerequisitesView();
     }
   );
 
   disposable = vscode.commands.registerCommand(
-    'vscode-azure.displayCreateResource',
+    'vscode-upcloud.displayCreateResource',
     () => {
       displayResourceCreateView();
     }
   );
-
-  disposable = vscode.commands.registerCommand(
-    'vscode-azure.displayAzureApiBrowser',
-    () => {
-      parseApi();
-    }
-  );
-
-  disposable = vscode.commands.registerCommand(
-    'vscode-azure.displayCmdHelpParser',
-    () => {
-      parseCommands();
-    }
-  );
-
 
   context.subscriptions.push(disposable);
 }

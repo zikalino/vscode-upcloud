@@ -1,9 +1,9 @@
 {
-  "name": "vscode-azure",
-  "displayName": "Azure Prerequisites",
-  "description": "ESP Toolchain Installer",
+  "name": "vscode-upcloud",
+  "displayName": "UpCloud Extension",
+  "description": "Create UpCloud Resources",
   "version": "0.0.1",
-  "repository": "https://github.com/zikalino/vscode-azure",
+  "repository": "https://github.com/zikalino/vscode-upcloud",
   "publisher": "zikalinox",
   "engines": {
     "vscode": "^1.85.0"
@@ -16,20 +16,12 @@
   "contributes": {
     "commands": [
       {
-        "command": "vscode-azure.displayPrerequisitesView",
-        "title": "SC Azure: Prerequisites"
+        "command": "vscode-upcloud.displayPrerequisitesView",
+        "title": "UpCloud: Prerequisites"
       },
       {
-        "command": "vscode-azure.displayCreateResource",
-        "title": "SC Azure: Create Resource"
-      },
-      {
-        "command": "vscode-azure.displayAzureApiBrowser",
-        "title": "SC Azure: Azure API"
-      },
-      {
-        "command": "vscode-azure.displayCmdHelpParser",
-        "title": "SC Azure: Command Help Browser"
+        "command": "vscode-upcloud.displayCreateResource",
+        "title": "UpCloud: Create Resource"
       }
     ]
   },

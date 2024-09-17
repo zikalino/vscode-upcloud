@@ -1,47 +1,47 @@
 type: layout-form
-id: root
 header:
   - type: header
-    title: Azure Prerequisites
-    logo: icon.webp
+    title: UpCloud Prerequisites
+    logo: upcloud.png
 form:
-  #
-  # Azure CLI
-  #
   - type: fieldset
-    id: fieldset_esp_idf
-    platform: win32
+    # platform: win32
     subitems:
       - type: 'action-row'
-        id: install-git
-        name: Install Git
-        verify: git --version
-        install: winget install git
+        name: Install Scoop
+        verify: scoop --version
+        install: iwr -useb get.scoop.sh | iex
       - type: 'action-row'
-        platform: win32
-        id: install-azure-cli
-        name: Install Azure CLI
-        banner: |
-            Installing Azure CLI. Azure CLI will be used by
-            this extension to access Azure
-        verify: az --version
-        install: | 
-                winget install -e --id Microsoft.AzureCLI
-                $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+        name: Install Go
+        verify: go version
+        install: scoop install go
+        uninstall: scoop uninstall go
       - type: 'action-row'
-        id: clone-azure-res-api
-        name: Clone Azure REST API
-        consumes:
-          - variable: version
-        verify: if (Test-path ~/azure-rest-api-specs -PathType container) { exit 0 } else { exit 1}
+        name: Install upctl
+        verify: upctl version
+        install: go install github.com/UpCloudLtd/upcloud-cli/v3/...@latest
+        uninstall: none
+
+  - type: fieldset
+    platform: linux
+    subitems:
+      - type: 'action-row'
+        name: Install Go
+        verify: go version
         install: |
-            cd ~
-            git clone --recursive https://github.com/Azure/azure-rest-api-specs.git
+          cd ~
+          wget https://go.dev/dl/go1.22.4.linux-amd64.tar.gz
+          echo "xxxpassxxx" | sudo -S rm -rf /usr/local/go
+          echo "xxxpassxxx" | sudo -S tar -C /usr/local -xzf go1.22.4.linux-amd64.tar.gz
+          export PATH=$PATH:/usr/local/go/bin
+      - type: 'action-row'
+        name: Install upctl
+        verify: upctl version
+        install: go install github.com/UpCloudLtd/upcloud-cli/v3/...@latest
+        uninstall: none
 
 footer:
   - type: footer
-    id: footer
     subitems:
       - type: button
-        id: install_button
         text: Create
