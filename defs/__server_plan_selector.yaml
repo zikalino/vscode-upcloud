@@ -1,0 +1,12 @@
+- type: row
+  subitems:
+    - type: combo
+      name: Select Server Plan
+      items: []
+      source:
+        cmd: |
+          upctl server plans --output json
+        path-id: $.[*].name
+        path-name: $.[*].name
+      produces:
+        - variable: server_plan

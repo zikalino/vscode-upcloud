@@ -1,39 +1,84 @@
 type: layout-form
-id: root
 header:
   - type: header
-    title: Cosmos DB
+    title: Create Server
     logo: icon.webp
 form:
-  - $include: __resource_group_select_or_create.yaml
+  #--avoid-host int                  Host to avoid when scheduling the server. Use this to make sure VMs do not reside on specific host.
+  #                                  Refers to value from `host` attribute. Useful when building HA-environments.
+  #                                  Default: 0
+  #--boot-order string               The boot device order, disk / cdrom / network or comma separated combination.
+  #--cores int                       Number of cores. Only allowed if `plan` option is set to "custom".
+  #                                  Default: 0
+  #--create-password                 Create an admin password.
+  #--enable-firewall                 Enable firewall.
+  #--enable-metadata                 Enable metadata service. The metadata service will be enabled by default, if the selected OS
+  #                                  template uses cloud-init and thus requires metadata service.
+  #--enable-remote-access            Enable remote access.
+  #--host int                        Schedule the server on a specific host. Refers to value from `host` attribute. Only available in
+  #                                  private clouds.
+  #                                  Default: 0
+  #--hostname string                 Server hostname.
+  #--label stringArray               Labels to describe the server in `key=value` format, multiple can be declared. Usage: --label
+  #                                  env=dev
+  #
+  #                                  --label owner=operations
+  #--memory int                      Memory amount in MiB. Only allowed if `plan` option is set to "custom".
+  #                                  Default: 0
+  #--network stringArray             A network interface for the server, multiple can be declared. Usage: --network
+  #                                  family=IPv4,type=public
+  #                                  --network type=private,network=037a530b-533e-4cef-b6ad-6af8094bb2bc,ip-address=10.0.0.1
+  #--os string                       Server OS to use (will be the first storage device). The value should be title or UUID of an either
+  #                                  public or private template. Set to empty to fully customise the storages.
+  #                                  Default: Ubuntu Server 24.04 LTS (Noble Numbat)
+  #--os-storage-size int             OS storage size in GiB. This is only applicable if `os` is also set. Zero value makes the disk equal
+  #                                  to the minimum size of the template.
+  #                                  Default: 0
+  #--os-storage-encrypt              Encrypt the OS storage. This is only applicable if `os` is also set.
+  #--password-delivery string        Defines how password is delivered. Available: email, sms
+  #                                  Default: none
+  #--plan string                     Server plan name. See "server plans" command for valid plans. Set to "custom" and use `cores` and
+  #                                  `memory` options for flexible plan.
+  #                                  Default: 1xCPU-2GB
+  #--remote-access-password string   Defines the remote access password.
+  #--remote-access-type string       Set a remote access type. Available: vnc, spice
+  #--server-group string             UUID of a server group for the server. To remove the server from the group, see `servergroup modify
+  #--simple-backup string            Simple backup rule. Format (HHMM,{dailies,weeklies,monthlies}). Example: 2300,dailies
+  #--ssh-keys stringSlice            Add one or more SSH keys to the admin account. Accepted values are SSH public keys or filenames from
+  #                                  where to read the keys.
+  #--storage stringArray             A storage connected to the server, multiple can be declared. Usage: --storage
+  #                                  action=attach,storage=01000000-0000-4000-8000-000020010301,type=cdrom
+  #--time-zone string                Time zone to set the RTC to.
+  #                                  Default: UTC
+  #--title string                    A short, informational description.
+  #--user-data string                Defines URL for a server setup script, or the script body itself.
+  #--username string                 Admin account username.
+  #--video-model string              Video interface model of the server. Available: vga, cirrus
+  #                                  Default: vga
+  #--wait                            Wait for server to be in started state before returning.
+  #--zone string                     Zone where to create the server. Run `upctl zone list` to list all available zones.
 
   - type: fieldset
-    id: fieldset-container-instance-creation
     subitems:
+      - $include: __zone_selector.yaml
       - type: row
         subitems:
           - type: textfield
-            name: Container Name
+            name: Host Name
             produces:
-              - variable: container_name
-      - type: row
-        id: container-instance-image-row
-        subitems:
-          - type: textfield
-            name: Container Name
-            produces:
-              - variable: image
+              - variable: host_name
+      - $include: __server_plan_selector.yaml
       - type: 'action-row'
         id: create-container-instance
         name: Create Container Instance
         consumes:
-          - variable: resource_group_name
-          - variable: container_name
-          - variable: image
+          - variable: host_name
+          - variable: zone
+          - variable: server_plan
         verify: |
-            az container show --resource-group ${resource_group_name} --name ${container_name}
-        install: az container create --resource-group ${resource_group_name} --name ${container_name} --image ${image}
-        uninstall: az container delete --resource-group ${resource_group_name} --name ${container_name}
+            upctl server show ${host_name}
+        install: upctl server create --hostname ${host_name} --zone ${zone} --plan ${server_plan} --password-delivery email
+        uninstall: upctl server delete ${host_name}
 
 footer:
   - type: footer
@@ -42,133 +87,3 @@ footer:
       - type: button
         id: install_button
         text: Create
-
-# Arguments
-#    --name -n                         [Required] : Name of the Cosmos DB database account.
-#    --resource-group -g               [Required] : Name of resource group. You can configure the
-#                                                   default group using `az configure --defaults
-#                                                   group=<name>`.
-#    --assign-identity                            : Assign system or user assigned identities
-#                                                   separated by spaces. Use '[system]' to refer
-#                                                   system assigned identity.
-#    --capabilities                               : Set custom capabilities on the Cosmos DB database
-#                                                   account.
-#    --default-consistency-level                  : Default consistency level of the Cosmos DB
-#                                                   database account.  Allowed values:
-#                                                   BoundedStaleness, ConsistentPrefix, Eventual,
-#                                                   Session, Strong.
-#    --default-identity                           : The primary identity to access key vault in CMK
-#                                                   related features. e.g. 'FirstPartyIdentity',
-#                                                   'SystemAssignedIdentity' and more. User-assigned
-#                                                   identities are specified in format
-#                                                   'UserAssignedIdentity=<resource ID of the user-
-#                                                   assigned identity>'.
-#    --disable-key-based-metadata-write-access    : Disable write operations on metadata resources
-#                                                   (databases, containers, throughput) via account
-#                                                   keys.  Allowed values: false, true.
-#    --enable-analytical-storage                  : Flag to enable log storage on the account.
-#                                                   Allowed values: false, true.
-#    --enable-automatic-failover                  : Enables automatic failover of the write region in
-#                                                   the rare event that the region is unavailable due
-#                                                   to an outage. Automatic failover will result in a
-#                                                   new write region for the account and is chosen
-#                                                   based on the failover priorities configured for
-#                                                   the account.  Allowed values: false, true.
-#    --enable-burst-capacity                      : Flag to Enable/Disable burst capacity feature.
-#                                                   Allowed values: false, true.
-#        Usage:    --enable-burst-capacity true
-#        Default:  false
-#        The accepted values for the enable-burst-capacity are true and false.
-#    --enable-free-tier                 [Preview] : If enabled the account is free-tier.
-#                                                   Allowed values: false, true.
-#        Argument '--enable-free-tier' is in preview and under development. Reference and
-#        support levels: https://aka.ms/CLI_refstatus
-#    --enable-multiple-write-locations            : Enable Multiple Write Locations.  Allowed values:
-#                                                   false, true.
-#    --enable-partition-merge                     : Flag to enable partition merge on the account.
-#                                                   Allowed values: false, true.
-#    --enable-virtual-network                     : Enables virtual network on the Cosmos DB database
-#                                                   account.  Allowed values: false, true.
-#    --ip-range-filter                            : Firewall support. Specifies the set of IP
-#                                                   addresses or IP address ranges in CIDR form to be
-#                                                   included as the allowed list of client IPs for a
-#                                                   given database account. IP addresses/ranges must
-#                                                   be comma-separated and must not contain any
-#                                                   spaces.
-#    --key-uri                                    : The URI of the key vault.
-#    --kind                                       : The type of Cosmos DB database account to create.
-#                                                   Allowed values: GlobalDocumentDB, MongoDB, Parse.
-#                                                   Default: GlobalDocumentDB.
-#    --locations                                  : Add a location to the Cosmos DB database account.
-#        Usage:          --locations KEY=VALUE [KEY=VALUE ...]
-#        Required Keys:  regionName, failoverPriority
-#        Optional Key:   isZoneRedundant
-#        Default:        single region account in the location of the specified resource group.
-#        Failover priority values are 0 for write regions and greater than 0 for read regions. A
-#        failover priority value must be unique and less than the total number of regions.
-#        Multiple locations can be specified by using more than one `--locations` argument.
-#    --max-interval                               : When used with Bounded Staleness consistency,
-#                                                   this value represents the time amount of
-#                                                   staleness (in seconds) tolerated. Accepted range
-#                                                   for this value is 5 - 86400.  Default: 5.
-#    --max-staleness-prefix                       : When used with Bounded Staleness consistency,
-#                                                   this value represents the number of stale
-#                                                   requests tolerated. Accepted range for this value
-#                                                   is 10 - 2,147,483,647.  Default: 100.
-#    --minimal-tls-version                        : Indicate the minimum allowed TLS version.
-#                                                   Allowed values: Tls, Tls11, Tls12.
-#        Usage:    --minimal-tls-version TLSVersion
-#        Default:  Tls, except for Cassandra and Mongo APIs, which only work with Tls12
-#        The accepted values for the minimal TLS version are 'Tls', 'Tls11', and 'Tls12', which
-#        correspond to the
-#        TLS versions 1.0, 1.1, and 1.2.
-#    --network-acl-bypass                         : Flag to enable or disable Network Acl Bypass.
-#                                                   Allowed values: AzureServices, None.
-#    --network-acl-bypass-resource-ids -i         : List of Resource Ids to allow Network Acl Bypass.
-#    --public-network-access -p                   : Sets public network access in server to either
-#                                                   Enabled, Disabled, or SecuredByPerimeter.
-#                                                   Allowed values: DISABLED, ENABLED,
-#                                                   SECUREDBYPERIMETER.
-#    --server-version                             : Valid only for MongoDB accounts.  Allowed values:
-#                                                   3.2, 3.6, 4.0, 4.2.
-#    --tags                                       : Space-separated tags: key[=value] [key[=value]
-#                                                   ...]. Use "" to clear existing tags.
-#    --virtual-network-rules                      : ACL's for virtual network.
-#
-# Analytical Storage Configuration Arguments
-#    --analytical-storage-schema-type --as-schema : Schema type for analytical storage.  Allowed
-#                                                   values: FullFidelity, WellDefined.
-#
-# Backup Policy Arguments
-#    --backup-interval                            : The frequency(in minutes) with which backups are
-#                                                   taken (only for accounts with periodic mode
-#                                                   backups).
-#    --backup-policy-type                         : The type of backup policy of the account to
-#                                                   create.  Allowed values: Continuous, Periodic.
-#    --backup-redundancy                          : The redundancy type of the backup Storage
-#                                                   account.  Allowed values: Geo, Local, Zone.
-#    --backup-retention                           : The time(in hours) for which each backup is
-#                                                   retained (only for accounts with periodic mode
-#                                                   backups).
-#    --continuous-tier                            : The tier of Continuous backup.  Allowed values:
-#                                                   Continuous30Days, Continuous7Days.
-#
-# Restore Arguments
-#    --databases-to-restore                       : Add a database and its collection names to
-#                                                   restore.
-#        Usage:          --databases-to-restore name=DatabaseName collections=collection1
-#        [collection2 ...].
-#    --gremlin-databases-to-restore               : Add a gremlin database and its graph names to
-#                                                   restore.
-#        Usage:          --gremlin-databases-to-restore name=DatabaseName graphs=graph1 [graph2 ...].
-#    --is-restore-request -r                      : Restore from an existing/deleted account.
-#                                                   Allowed values: false, true.
-#    --restore-source                             : The restorable-database-account Id of the source
-#                                                   account from which the account has to be
-#                                                   restored. Required if --is-restore-request is set
-#                                                   to true.
-#    --restore-timestamp                          : The timestamp to which the account has to be
-#                                                   restored to. Required if --is-restore-request is
-#                                                   set to true.
-#    --tables-to-restore                          : Add table names to restore.
-#        Usage:          --tables-to-restore tables=table1 [table2 ...].

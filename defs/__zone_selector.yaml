@@ -1,0 +1,12 @@
+- type: row
+  subitems:
+    - type: combo
+      name: Select Zone
+      items: []
+      source:
+        cmd: |
+          upctl zone list --output json
+        path-id: $.zone.[*].id
+        path-name: $.zone.[*].description
+      produces:
+        - variable: zone
